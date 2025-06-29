@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Resume | Prashant Nair</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chosen Palette: Calm Harmony (Stone, Slate, Teal) -->
+    <!-- Application Structure Plan: A single-page application with a fixed sidebar navigation for seamless exploration. The structure is thematic: Overview, Career Journey, Skills, Portfolio, and Education. This non-linear design allows users (like recruiters) to instantly access the most relevant information. The career path is visualized as an interactive timeline, projects are presented as a filterable gallery of cards, and skills are displayed in a radar chart and categorized lists. This structure prioritizes user engagement and rapid information synthesis over the linear format of a traditional document. -->
+    <!-- Visualization & Content Choices: 
+        - Career Journey: (Goal: Show progression) A vertical timeline (HTML/CSS) is used for clarity. Interaction: Clicking a role reveals details in a modal, preventing content overload.
+        - Skills Explorer: (Goal: Showcase diverse skills) A Radar Chart (Chart.js) provides a high-level summary of core competencies. Interaction: Buttons below filter detailed skill lists, allowing for quick assessment of specific capabilities.
+        - Project Portfolio: (Goal: Demonstrate impact) A grid of cards (HTML/CSS) offers a scannable overview. Interaction: Clicking a card opens a modal with in-depth project details.
+        - Certifications: (Goal: Present extensive list cleanly) A collapsible accordion (HTML/JS) groups certifications by theme, reducing clutter and improving readability.
+        - Justification: This combination of visuals and interactions transforms a static resume into a dynamic profile, making it more engaging and easier for users to find the information they need efficiently. All visuals are rendered on Canvas via Chart.js or built with structured HTML/CSS.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+        .active-nav {
+            color: #14b8a6;
+            border-left-color: #14b8a6;
+        }
+        .modal-enter {
+            animation: fadeIn 0.3s ease-out;
+        }
+        .modal-leave {
+            animation: fadeOut 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        @keyframes fadeOut {
+            from { opacity: 1; transform: scale(1); }
+            to { opacity: 0; transform: scale(0.95); }
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 320px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-stone-50 text-slate-700">
+    <div class="flex flex-col md:flex-row min-h-screen">
+        <!-- Sidebar Navigation -->
+        <aside class="w-full md:w-64 bg-white border-b md:border-r border-stone-200 p-4 md:p-6 md:sticky md:top-0 md:h-screen flex flex-col">
+            <div class="text-center md:text-left">
+                <h1 class="text-2xl font-bold text-slate-800">Prashant Nair</h1>
+                <p class="text-sm text-teal-600 font-medium mt-1">Product & Program Manager</p>
+            </div>
+            <nav class="mt-8 flex-1">
+                <ul class="flex flex-row md:flex-col gap-2">
+                    <li><a href="#overview" class="nav-link block p-2 text-slate-600 font-medium border-l-4 border-transparent hover:bg-stone-100">Overview</a></li>
+                    <li><a href="#journey" class="nav-link block p-2 text-slate-600 font-medium border-l-4 border-transparent hover:bg-stone-100">Career Journey</a></li>
+                    <li><a href="#skills" class="nav-link block p-2 text-slate-600 font-medium border-l-4 border-transparent hover:bg-stone-100">Skills</a></li>
+                    <li><a href="#portfolio" class="nav-link block p-2 text-slate-600 font-medium border-l-4 border-transparent hover:bg-stone-100">Portfolio</a></li>
+                    <li><a href="#education" class="nav-link block p-2 text-slate-600 font-medium border-l-4 border-transparent hover:bg-stone-100">Education</a></li>
+                </ul>
+            </nav>
+            <div class="mt-auto text-center md:text-left">
+                <a href="mailto:prashantrknair@gmail.com" class="block text-sm hover:text-teal-600">prashantrknair@gmail.com</a>
+                <a href="https://www.linkedin.com/in/prashantnair" target="_blank" class="block text-sm hover:text-teal-600">LinkedIn Profile</a>
+                <p class="text-sm mt-2">+91-9823241804</p>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6 md:p-12">
+            <section id="overview" class="mb-16 min-h-[60vh] flex items-center">
+                <div>
+                    <h2 class="text-3xl font-bold text-slate-800 mb-4">Highly accomplished and versatile professional...</h2>
+                    <p class="text-lg leading-relaxed">
+                        With over 17 years of experience in product management, program management, and technology consulting, specializing in digital learning transformation. Proven ability to define product strategies, lead cross-functional teams, and drive end-to-end product development from conception to deployment. Adept at leveraging design thinking, agile methodologies, and data analytics to deliver innovative solutions and achieve measurable business outcomes for global clients, including multilateral agencies, government departments, and Fortune 500 companies.
+                    </p>
+                </div>
+            </section>
+
+            <section id="journey" class="mb-16">
+                <h2 class="text-3xl font-bold text-slate-800 mb-8">Career Journey</h2>
+                 <p class="mb-8 max-w-3xl">This timeline outlines my professional growth, from my foundational roles in software engineering to my current leadership position in technology and product management. Each step represents a significant expansion of skills in team leadership, strategic planning, and product innovation. Click on any role to see detailed accomplishments and responsibilities.</p>
+                <div id="timeline-container" class="relative border-l-2 border-teal-200 ml-4">
+                    <!-- Timeline items will be injected here by JavaScript -->
+                </div>
+            </section>
+
+            <section id="skills" class="mb-16">
+                <h2 class="text-3xl font-bold text-slate-800 mb-4">Skills Explorer</h2>
+                <p class="mb-8 max-w-3xl">My expertise spans four core areas: Product Management, Program Leadership, Technology, and Business Consulting. The chart below provides a high-level view of these competencies. Use the buttons to filter and explore the specific skills and technologies I've mastered within each domain, showcasing my ability to operate effectively at the intersection of strategy, execution, and technology.</p>
+                <div class="chart-container mb-8">
+                    <canvas id="skillsChart"></canvas>
+                </div>
+                <div id="skills-filter-buttons" class="flex flex-wrap gap-2 justify-center mb-6">
+                    <!-- Filter buttons will be injected here -->
+                </div>
+                <div id="skills-list" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    <!-- Skill items will be injected here -->
+                </div>
+            </section>
+
+            <section id="portfolio" class="mb-16">
+                <h2 class="text-3xl font-bold text-slate-800 mb-4">Project Portfolio</h2>
+                 <p class="mb-8 max-w-3xl">This portfolio highlights a selection of key projects that demonstrate my capabilities in leading complex initiatives for a diverse range of prestigious clients, from government bodies to global corporations. These engagements showcase my ability to deliver impactful solutions in areas like digital transformation, enterprise systems, and learning technology. Click on any project to explore the challenge, my role, and the outcomes.</p>
+                <div id="portfolio-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Portfolio cards will be injected here by JavaScript -->
+                </div>
+            </section>
+
+            <section id="education" class="mb-16">
+                <h2 class="text-3xl font-bold text-slate-800 mb-8">Education & Certifications</h2>
+                <p class="mb-8 max-w-3xl">My formal education in Computer Engineering and Finance provides a strong, interdisciplinary foundation. This is complemented by a commitment to continuous learning, demonstrated by an extensive list of recent certifications in product management, cloud technologies, and emerging digital trends. Explore the sections below to see my academic background and professional development.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-800 mb-4">Formal Education</h3>
+                        <div class="bg-white p-4 rounded-lg border border-stone-200">
+                            <h4 class="font-bold text-slate-700">M.M.S. Finance (71%)</h4>
+                            <p class="text-sm">Xavier Institute of Management & Research, Mumbai</p>
+                            <p class="text-xs text-slate-500 mt-1">2007 – 2009</p>
+                        </div>
+                        <div class="bg-white p-4 rounded-lg border border-stone-200 mt-4">
+                            <h4 class="font-bold text-slate-700">B.E. Computer Engineering (73%)</h4>
+                            <p class="text-sm">K.C. College of Engineering, Mumbai</p>
+                            <p class="text-xs text-slate-500 mt-1">2001 – 2005</p>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-bold text-slate-800 mb-4">Certifications</h3>
+                        <div id="certifications-accordion">
+                            <!-- Accordion items will be injected here -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center p-4">
+        <div id="modal-content" class="bg-white rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto p-6 relative modal-enter">
+            <button id="modal-close" class="absolute top-4 right-4 text-slate-500 hover:text-slate-800">&times;</button>
+            <h3 id="modal-title" class="text-2xl font-bold text-slate-800 mb-4"></h3>
+            <div id="modal-body" class="text-slate-600 leading-relaxed"></div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // --- DATA ---
+            const careerData = [
+                {
+                    role: "Associate Vice President, Technology - Platforms",
+                    company: "HighwirePress (McMillan), Mumbai",
+                    period: "April 2022 – Present",
+                    details: `
+                        <ul>
+                            <li class="mb-2">Lead two product engineering verticals, overseeing backend and frontend teams for global order, subscription management, and publishing workflow systems (THINK365, Ampere).</li>
+                            <li class="mb-2">Collaborate with design, product, and account teams to build products based on emerging trends, managing sprint cycles and technical solution roadmaps.</li>
+                            <li class="mb-2">Define product roadmaps, prioritize new feature development based on research and client feedback, and develop Go-to-Market (GTM) strategies.</li>
+                            <li class="mb-2">Oversee UAT processes, establish KPIs for product performance, and drive continuous improvement initiatives.</li>
+                        </ul>`
+                },
+                {
+                    role: "Manager, People Advisory Services",
+                    company: "Ernst & Young LLP, Mumbai",
+                    period: "June 2018 – April 2022",
+                    details: `
+                        <ul>
+                            <li class="mb-2">Led the design and development of end-to-end e-learning transformation programs for large global clients, focusing on cost optimization, productivity improvement, and capability development.</li>
+                            <li class="mb-2">Managed the implementation and deployment of Learning Experience Platforms (LXP) for national-level initiatives (e.g., Digital Learning Lab for Prime Minister's Office, Enabling CPC 2.0).</li>
+                            <li class="mb-2">Strategized and established operational frameworks for large-scale programs, including project management units, team structures, governance mechanisms, and monitoring dashboards.</li>
+                            <li class="mb-2">Facilitated design thinking workshops, defined PRDs/BRDs, and managed the full SDLC for various digital products, including a content inventory database (IHQ) and mobile learning apps.</li>
+                        </ul>`
+                },
+                {
+                    role: "Senior Business Manager",
+                    company: "TATA Interactive Systems, Mumbai",
+                    period: "October 2015 – June 2018",
+                    details: `
+                        <ul>
+                            <li class="mb-2">Provided solutions for e-learning and software application features, conducting needs analysis and requirement gathering workshops.</li>
+                            <li class="mb-2">Managed the design, development, and delivery of digital learning projects, ensuring project profitability and client satisfaction.</li>
+                            <li class="mb-2">Implemented social learning solutions (e.g., Cigna SAP JAM - Storytelling Tool) and managed content inventory migration projects.</li>
+                        </ul>`
+                },
+                {
+                    role: "Project Manager",
+                    company: "Aptara New Media / Indecomm Global",
+                    period: "2010 – 2015",
+                    details: `
+                        <ul>
+                            <li class="mb-2">Delivered e-learning projects for "Big 4" consulting firms and a major farm equipment manufacturer (John Deere).</li>
+                            <li class="mb-2">Managed teams of Virtual Classroom administrators and oversaw LMS administration.</li>
+                            <li class="mb-2">Focused on account mining to increase business within existing accounts and managed resource augmentation.</li>
+                        </ul>`
+                },
+                {
+                    role: "Associate Project Manager",
+                    company: "Praxis Technologies, Mumbai",
+                    period: "2009 – 2010",
+                    details: `
+                        <ul>
+                            <li class="mb-2">Managed multiple e-learning projects for a large AP educational services provider (PLATO Learning), leading a team of 42 members.</li>
+                            <li class="mb-2">Designed Excel-based tools for tracking large projects and defined learning paths and journeys within the PLE environment.</li>
+                        </ul>`
+                },
+                {
+                    role: "Assistant Systems Engineer",
+                    company: "TATA Consultancy Services (TCS), Chennai",
+                    period: "2006 – 2007",
+                    details: `
+                        <ul>
+                            <li class="mb-2">Involved in software development and maintenance for Bank of America (BoA), specifically for the IRIS project (employee onboarding system).</li>
+                            <li class="mb-2">Gained experience in Classic ASP, ASP.NET, and MySQL, and participated in QA/testing processes.</li>
+                        </ul>`
+                },
+            ];
+
+            const portfolioData = [
+                { title: "THINK365 & Ampere", client: "John Hopkins, MIT, Elsevier", description: "Led engineering for global order management and manuscript submission platforms.", details: "As AVP at HighwirePress, I lead the engineering verticals for THINK365 and Ampere. My role involves steering the product roadmap, managing sprint cycles for backend and frontend teams, and collaborating with stakeholders to integrate emerging technologies. I'm responsible for defining GTM strategies and ensuring the platforms meet client needs for scholarly publishing workflows." },
+                { title: "National Digital Learning Lab", client: "Govt. of India (PMO)", description: "Managed implementation of a national digital learning academy.", details: "At EY, I managed the deployment of a digital learning lab for the Department of Personnel & Training. This involved analyzing the business strategy, designing the operating and governance framework, benchmarking against global labs, and program managing the end-to-end setup and operationalization, a project of national importance." },
+                { title: "Inventory Head Quarters (IHQ)", client: "UnitedHealthcare (UHC)", description: "Led design and migration of a Knowledge Mgmt. System.", details: "I facilitated a design thinking workshop to identify key issues with the existing system and defined the business requirements (BRD) for the new IHQ. I managed the full SDLC, including creating use cases, test scripts, and implementing an iterative agile methodology for the development and migration of the content inventory database." },
+                { title: "Mobile Learning Apps", client: "John Deere", description: "Managed development of iOS apps for new product training.", details: "As Project Manager, I delivered eLearning and iOS apps to train users on new farm equipment. This involved managing the complete development lifecycle, coordinating between UI/UX experts and developers, and overseeing the process of hosting the app on the App Store." },
+                { title: "Sales Productivity Platform", client: "DHFL Pramerica", description: "Designed a digital product to improve sales agent productivity.", details: "I led a project to design and deploy a digital learning product and an LXP for sales agents. My role included training needs analysis, defining the learning strategy and framework, designing learning personas and journeys, managing the LXP deployment, and evaluating program effectiveness through pilot testing and analytics." },
+                { title: "System Transformation", client: "KPMG-Global, PwC", description: "Delivered e-learning projects for Big 4 consulting firms.", details: "At Aptara, I managed end-to-end e-learning project delivery for major consulting firms. This required ensuring profitability, managing virtual classroom teams, and overseeing all aspects of LMS administration to support large-scale system transformation training programs." },
+            ];
+            
+            const skillsData = {
+                'Product & Strategy': ['Product Roadmap', 'Feature Prioritization', 'Market Analysis', 'User Stories', 'PRD/BRD', 'Design Thinking', 'UX/UI Collaboration', 'Go-to-Market Strategy', 'UAT', 'A/B Testing', 'Engagement Analytics', 'NPS', 'Monetization'],
+                'Program & Project': ['Agile (Scrum, Kanban)', 'Waterfall', 'SDLC', 'Team Leadership', 'Stakeholder Management', 'Risk Mitigation', 'Resource Planning', 'Budgeting', 'Vendor Management', 'RFP/Tender Management', 'QA', 'Six Sigma'],
+                'Tech & Digital Learning': ['LMS/LXP', 'eLearning Content Dev', 'Mobile App Dev (iOS/Android)', 'HTML5/CSS3', 'JavaScript', 'NodeJS', 'ReactJS', 'Java', 'MySQL', 'Python', 'DevOps CI/CD', 'Power BI', 'JIRA', 'Figma'],
+                'Business & Consulting': ['Business Consulting', 'Needs Analysis', 'Requirements Gathering', 'Solution Architecture', 'Strategic Alliances', 'Account Mining', 'Client Relations', 'Cost Optimization', 'Digital Transformation', 'Change Management'],
+            };
+
+            const certificationsData = {
+                "Product & Design": [
+                    "Product Management Fundamentals, Institute of Product Leadership",
+                    "Design Thinking, Designit Strategic Design"
+                ],
+                "Tech & Architecture": [
+                    "API & Web Services, Udemy",
+                    "Practical Solution Architecture, Udemy",
+                    "DevOps CI/CD, Udemy",
+                    "OpenAPI, Udemy",
+                    "Deploy NodeJS on Heroku, Udemy"
+                ],
+                "Emerging Tech": [
+                    "Machine Learning with Qlik AutoML, Udemy",
+                    "Blockchain & Bitcoin Fundamentals, Udemy",
+                    "Introduction to NFT, Upgrad",
+                    "Introduction to Cryptocurrency, Upgrad",
+                    "Introduction to IPR, Upgrad",
+                    "Introduction to Fintech, Upgrad",
+                    "Future of Energy, Udemy",
+                    "Blockchain Industry Applications, Ligency"
+                ],
+                "Process & Other": [
+                    "Six Sigma White Belt, AIGPE",
+                    "Growth Mindset, Udemy",
+                    "Forensic Psychology, AIOTH",
+                    "Principles of Economics, Udemy"
+                ]
+            };
+
+
+            // --- RENDER FUNCTIONS ---
+
+            function renderTimeline() {
+                const container = document.getElementById('timeline-container');
+                container.innerHTML = careerData.map((item, index) => `
+                    <div class="mb-8 flex items-center cursor-pointer timeline-item" data-index="${index}">
+                        <div class="absolute -left-1.5 w-3 h-3 bg-teal-500 rounded-full"></div>
+                        <div class="ml-8 p-4 bg-white rounded-lg border border-stone-200 w-full hover:shadow-md transition-shadow">
+                            <h4 class="font-bold text-slate-800">${item.role}</h4>
+                            <p class="text-sm text-slate-600">${item.company}</p>
+                            <p class="text-xs text-slate-500 mt-1">${item.period}</p>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            function renderPortfolio() {
+                const grid = document.getElementById('portfolio-grid');
+                grid.innerHTML = portfolioData.map((item, index) => `
+                    <div class="bg-white p-6 rounded-lg border border-stone-200 flex flex-col hover:shadow-lg transition-shadow">
+                        <h4 class="font-bold text-slate-800 text-lg">${item.title}</h4>
+                        <p class="text-sm text-teal-600 font-medium mt-1">${item.client}</p>
+                        <p class="text-slate-600 mt-3 flex-1">${item.description}</p>
+                        <button class="portfolio-item mt-4 text-sm text-teal-600 font-semibold self-start hover:text-teal-700" data-index="${index}">Learn More &rarr;</button>
+                    </div>
+                `).join('');
+            }
+
+            function renderSkills(filter = 'All') {
+                const skillsList = document.getElementById('skills-list');
+                let skillsToRender = [];
+
+                if (filter === 'All') {
+                    skillsToRender = Object.values(skillsData).flat();
+                } else {
+                    skillsToRender = skillsData[filter];
+                }
+
+                skillsList.innerHTML = skillsToRender.map(skill => `
+                    <div class="bg-white p-3 rounded-md border border-stone-200 text-center text-sm font-medium text-slate-700">
+                        ${skill}
+                    </div>
+                `).join('');
+                
+                const buttons = document.querySelectorAll('.skill-filter-btn');
+                buttons.forEach(button => {
+                    if (button.textContent === filter) {
+                        button.classList.add('bg-teal-600', 'text-white');
+                        button.classList.remove('bg-white', 'text-teal-600');
+                    } else {
+                        button.classList.add('bg-white', 'text-teal-600');
+                        button.classList.remove('bg-teal-600', 'text-white');
+                    }
+                });
+            }
+
+            function renderSkillButtons() {
+                const container = document.getElementById('skills-filter-buttons');
+                const categories = ['All', ...Object.keys(skillsData)];
+                container.innerHTML = categories.map(cat => 
+                    `<button class="skill-filter-btn px-4 py-2 rounded-full border-2 border-teal-600 text-sm font-semibold transition-colors">${cat}</button>`
+                ).join('');
+            }
+
+            function renderCertifications() {
+                const container = document.getElementById('certifications-accordion');
+                container.innerHTML = Object.keys(certificationsData).map(category => `
+                    <div class="border-b border-stone-200">
+                        <button class="accordion-header w-full flex justify-between items-center p-4 text-left">
+                            <span class="font-bold text-slate-700">${category}</span>
+                            <span class="accordion-icon text-teal-500 font-bold transition-transform transform">+</span>
+                        </button>
+                        <div class="accordion-content hidden px-4 pb-4">
+                            <ul class="list-disc list-inside text-sm">
+                                ${certificationsData[category].map(cert => `<li>${cert}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // --- MODAL LOGIC ---
+            const modal = document.getElementById('modal');
+            const modalContent = document.getElementById('modal-content');
+            const modalTitle = document.getElementById('modal-title');
+            const modalBody = document.getElementById('modal-body');
+            const modalClose = document.getElementById('modal-close');
+
+            function openModal(title, body) {
+                modalTitle.textContent = title;
+                modalBody.innerHTML = body;
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                modalContent.classList.remove('modal-leave');
+                modalContent.classList.add('modal-enter');
+            }
+
+            function closeModal() {
+                modalContent.classList.add('modal-leave');
+                modalContent.classList.remove('modal-enter');
+                setTimeout(() => {
+                   modal.classList.add('hidden');
+                   modal.classList.remove('flex');
+                }, 300);
+            }
+
+            modalClose.onclick = closeModal;
+            modal.onclick = (event) => {
+                if (event.target === modal) {
+                    closeModal();
+                }
+            };
+            
+            document.getElementById('timeline-container').addEventListener('click', (e) => {
+                const item = e.target.closest('.timeline-item');
+                if (item) {
+                    const data = careerData[item.dataset.index];
+                    openModal(data.role, data.details);
+                }
+            });
+
+            document.getElementById('portfolio-grid').addEventListener('click', (e) => {
+                const item = e.target.closest('.portfolio-item');
+                if (item) {
+                    const data = portfolioData[item.dataset.index];
+                    openModal(data.title, `<p class="font-semibold text-slate-500 mb-4">${data.client}</p>${data.details}`);
+                }
+            });
+
+            // --- EVENT LISTENERS ---
+            document.getElementById('skills-filter-buttons').addEventListener('click', (e) => {
+                if (e.target.classList.contains('skill-filter-btn')) {
+                    renderSkills(e.target.textContent);
+                }
+            });
+
+            document.getElementById('certifications-accordion').addEventListener('click', (e) => {
+                const header = e.target.closest('.accordion-header');
+                if (header) {
+                    const content = header.nextElementSibling;
+                    const icon = header.querySelector('.accordion-icon');
+                    content.classList.toggle('hidden');
+                    icon.textContent = content.classList.contains('hidden') ? '+' : '-';
+                }
+            });
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            const sections = document.querySelectorAll('section');
+
+            window.onscroll = () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop;
+                    if (pageYOffset >= sectionTop - 100) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active-nav');
+                    if (link.getAttribute('href').substring(1) === current) {
+                        link.classList.add('active-nav');
+                    }
+                });
+            };
+
+
+            // --- CHART.JS ---
+            const ctx = document.getElementById('skillsChart').getContext('2d');
+            const skillsChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: Object.keys(skillsData),
+                    datasets: [{
+                        label: 'Competency Level',
+                        data: [9, 9, 8, 8.5], // Arbitrary proficiency scores for visualization
+                        backgroundColor: 'rgba(20, 184, 166, 0.2)',
+                        borderColor: 'rgba(20, 184, 166, 1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: 'rgba(20, 184, 166, 1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(20, 184, 166, 1)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(0, 0, 0, 0.1)' },
+                            grid: { color: 'rgba(0, 0, 0, 0.1)' },
+                            pointLabels: {
+                                font: { size: 14, weight: 'bold' },
+                                color: '#475569'
+                            },
+                            ticks: {
+                                backdropColor: 'rgba(255, 255, 255, 0.75)',
+                                color: '#64748b',
+                                stepSize: 2
+                            },
+                            min: 0,
+                            max: 10,
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+
+
+            // --- INITIAL RENDER ---
+            renderTimeline();
+            renderPortfolio();
+            renderSkillButtons();
+            renderSkills();
+            renderCertifications();
+            // Set initial active nav link
+            document.querySelector('.nav-link[href="#overview"]').classList.add('active-nav');
+        });
+    </script>
+</body>
+</html>
